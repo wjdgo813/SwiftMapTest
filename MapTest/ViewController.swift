@@ -28,27 +28,25 @@ class ViewController: UIViewController ,CLLocationManagerDelegate{
         
         let camera = GMSCameraPosition.camera(withLatitude: -33.86, longitude: 151.20, zoom: 6.0)
         mapView = GMSMapView.map(withFrame:mainView.frame ,camera:camera)
-        
+
         adjustMapStyle()
         addOverlay()
-        
         
         mainView.addSubview(mapView)
         self.mapView.isMyLocationEnabled = true
 
         self.locationManager.delegate = self
-//        self.locationManager.distanceFilter = 1
         self.locationManager.startMonitoringSignificantLocationChanges() //백그라운드에서 기지국이 바뀔 때만 노티 받음.
         self.locationManager.requestWhenInUseAuthorization()
         self.locationManager.requestAlwaysAuthorization()
         self.locationManager.startUpdatingLocation()
+        self.locationManager.allowsBackgroundLocationUpdates = true
 
         marker.title = "me!"
         marker.snippet = "Australia"
         marker.icon = UIImage(named: "spidey")
         marker.iconView?.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
         marker.map = mapView
-        
     }
 
     //locationManager
@@ -66,13 +64,11 @@ class ViewController: UIViewController ,CLLocationManagerDelegate{
 
         marker.position = (location?.coordinate)!
         
-        
         coordinate.text = "위치 : \(long!), \(lat!)"
         statusLabel.text = "speed : \(speed!)"
         print("위도 : \(long!) , 경도 : \(lat!)")
-        
-        previewImage.image = searchRegion(lat: Float(long!), long: Float(lat!))
-        
+
+        previewImage.image = searchArea(lat: Float(long!), long: Float(lat!))
 //        self.locationManager.stopUpdatingLocation()
     }
     
@@ -83,11 +79,9 @@ class ViewController: UIViewController ,CLLocationManagerDelegate{
             }else{
                 print("unable to find style.json")
             }
-            
         }catch{
             print ("failed to load map style")
         }
-        
     }
     
     
@@ -105,23 +99,16 @@ class ViewController: UIViewController ,CLLocationManagerDelegate{
         let southWest = CLLocationCoordinate2D(latitude: 40.712216, longitude: -74.22655)
         let northEast = CLLocationCoordinate2D(latitude: 40.773941, longitude: -74.12544)
         let overlayBounds = GMSCoordinateBounds(coordinate: southWest, coordinate: northEast)
-        
         let icon = UIImage(named:"newark")
-        
+
         let overlay = GMSGroundOverlay(bounds: overlayBounds, icon: icon)
-//     overlay.bearing = 100
-        
         overlay.map = mapView
-        
-        
         
     }
     
-    func searchRegion(lat : Float , long : Float)->UIImage{
-        
+    func searchArea(lat : Float , long : Float)->UIImage{
         let staticMapURL = NSString(format: "http://maps.google.com/maps/api/staticmap?markers=color:red|%f,%f&%@&sensor=true", lat,long,"zoom=10&size=270x70")
         let mapURL = URL(string: staticMapURL.addingPercentEscapes(using: String.Encoding.utf8.rawValue)!)
-        
         do {
             return try UIImage(data: NSData(contentsOf: mapURL!) as Data)!
         } catch  {
