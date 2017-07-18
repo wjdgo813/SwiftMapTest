@@ -10,6 +10,11 @@ import UIKit
 import GoogleMaps
 import GooglePlaces
 
+
+
+
+
+
 class ViewController: UIViewController ,CLLocationManagerDelegate{
 
     @IBOutlet weak var mainView: UIView!
@@ -40,13 +45,25 @@ class ViewController: UIViewController ,CLLocationManagerDelegate{
         self.locationManager.requestWhenInUseAuthorization()
         self.locationManager.requestAlwaysAuthorization()
         self.locationManager.startUpdatingLocation()
-        self.locationManager.allowsBackgroundLocationUpdates = true
+//        self.locationManager.allowsBackgroundLocationUpdates = true
 
         marker.title = "me!"
         marker.snippet = "Australia"
         marker.icon = UIImage(named: "spidey")
         marker.iconView?.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
         marker.map = mapView
+        
+        
+        let path = GMSMutablePath()
+        path.addLatitude(-37.81319, longitude: 144.96298)
+        path.addLatitude(-31.95285, longitude: 115.85734)
+        let polyLine = GMSPolyline(path: path)
+        polyLine.map = mapView
+        polyLine.strokeColor = .blue
+        polyLine.geodesic = true
+        
+        
+        
     }
 
     //locationManager
@@ -60,7 +77,7 @@ class ViewController: UIViewController ,CLLocationManagerDelegate{
         count += 1
         locationCountLabel.text = "\(String(count))"
         
-        self.mapView.animate(to: camera)
+//        self.mapView.animate(to: camera)
 
         marker.position = (location?.coordinate)!
         
@@ -74,7 +91,7 @@ class ViewController: UIViewController ,CLLocationManagerDelegate{
     
     func adjustMapStyle(){
         do {
-            if let styleURL = Bundle.main.url(forResource: "style", withExtension: "json"){
+            if let styleURL = Bundle.main.url(forResource: "grayStyle", withExtension: "json"){
                 mapView.mapStyle = try GMSMapStyle(contentsOfFileURL : styleURL)
             }else{
                 print("unable to find style.json")
@@ -99,10 +116,15 @@ class ViewController: UIViewController ,CLLocationManagerDelegate{
         let southWest = CLLocationCoordinate2D(latitude: 40.712216, longitude: -74.22655)
         let northEast = CLLocationCoordinate2D(latitude: 40.773941, longitude: -74.12544)
         let overlayBounds = GMSCoordinateBounds(coordinate: southWest, coordinate: northEast)
+        
+        
+        
         let icon = UIImage(named:"newark")
 
         let overlay = GMSGroundOverlay(bounds: overlayBounds, icon: icon)
         overlay.map = mapView
+        
+
         
     }
     
@@ -132,6 +154,7 @@ class ViewController: UIViewController ,CLLocationManagerDelegate{
 //        layer.zIndex = 100
 //        layer.map = mapView
 //    }
+    
     
 }
 
